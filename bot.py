@@ -3,6 +3,25 @@ import sqlite3
 import csv
 import os
 import asyncio
+import os
+import threading
+from http.server import BaseHTTPRequestHandler, HTTPServer
+
+# Render xato bermasligi uchun soxta veb-server
+class DummyHandler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        self.send_response(200)
+        self.end_headers()
+        self.wfile.write(b"Bot ishlayapti")
+
+def run_dummy_server():
+    port = int(os.environ.get("PORT", 10000))
+    server = HTTPServer(('0.0.0.0', port), DummyHandler)
+    server.serve_forever()
+
+keep_alive_thread = threading.Thread(target=run_dummy_server)
+keep_alive_thread.daemon = True
+keep_alive_thread.start()
 from aiogram import Bot, Dispatcher, types
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.dispatcher import FSMContext
